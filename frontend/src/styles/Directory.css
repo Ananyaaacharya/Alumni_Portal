@@ -1,0 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+.directory-section {
+  background: linear-gradient(to right,#82eefd ,#8af67c, #f8f9fc);
+  min-height: 100vh;
+  padding-top: 5rem;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
+}
+
+.directory-section h2 {
+  font-size: 2.8rem;
+  font-weight: 600;
+  margin-bottom: 2.5rem;
+  text-align: center;
+  background: linear-gradient(to right, #007bff, #00c6ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text; 
+  color: transparent;
+}
+
+/* Pagination */
+.pagination .page-item.active .page-link {
+  background: linear-gradient(135deg, #007bff, #00c6ff);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+.pagination .page-link {
+  color: #007bff;
+  border: 1px solid #dee2e6;
+  transition: 0.2s ease;
+}
+
+.pagination .page-link:hover {
+  background-color: #f1f1f1;
+}
+
+/* Alerts */
+.alert-danger {
+  margin-top: 1rem;
+  border-left: 5px solid #dc3545;
+  background-color: #ffe2e6;
+  color: #842029;
+  font-weight: 500;
+}
+
+/* Card Sections */
+.search-bar,
+.filter-bar {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+  transition: box-shadow 0.3s ease;
+}
+
+.search-bar:hover,
+.filter-bar:hover {
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* Buttons inside cards */
+button {
+  background: linear-gradient(to right, #4facfe, #00f2fe);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: linear-gradient(to right, #00f2fe, #4facfe);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
