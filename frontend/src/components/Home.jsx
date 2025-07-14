@@ -29,7 +29,7 @@ function Home() {
         <h1 className="heading">Welcome to Alumni Portal</h1>
         <div className="nav-buttons">
           <button onClick={() => navigate("/events")}>Events</button>
-          <button onClick={() => alert("Jobs/Internships Page")}>Jobs/Internships</button>
+          <button onClick={() => navigate("/Jobs ")}>Jobs/Internships</button>
           <button onClick={() => alert("Posts Page")}>Posts</button>
           <button onClick={() => navigate("/directory")}>Find</button><button onClick={() => navigate("/directory")}>Find</button>
           <button

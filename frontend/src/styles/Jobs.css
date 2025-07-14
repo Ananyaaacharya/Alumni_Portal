@@ -1,0 +1,32 @@
+.jobs-container {
+  background: linear-gradient(to right,#82eefd ,#8af67c, #b6fa84);
+  padding: 40px;
+  max-width: 100%;
+  margin: auto;
+}
+
+.job-row {
+  display: flex;
+  align-items: center;
+  padding: 30px;
+  margin-bottom: 15px;
+  border: 1px solid #2c3e50;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.job-row:hover {
+  background-color: #f5f5f5;
+}
+
+.job-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  margin-right: 20px;
+}
+
+.job-info h5 {
+  font-weight: 600;
+}

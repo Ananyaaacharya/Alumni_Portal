@@ -1,0 +1,38 @@
+.job-details-container {
+  background: linear-gradient(to right,#82eefd ,#8af67c, #b6fa84);
+  padding: 40px;
+  max-width: 900px;
+  margin: auto;
+}
+
+.job-poster {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.job-details-content {
+  padding-top: 30px;
+}
+
+.job-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.details-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+
+.job-requirements p {
+  margin: 8px 0;
+  font-size: 1rem;
+}
+
+.apply-btn-box {
+  margin-top: 20px;
+}
