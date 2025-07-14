@@ -1,154 +1,78 @@
-//backend\controllers\user.controller.js
+// backend/controllers/user.controller.js
+
 import User from "../models/user.model.js";
 
-// Add a new alumni user
-const addUser = async (req, res) => {
+// 1. Add User
+export const addUser = async (req, res) => {
   try {
-    const userData = req.body;
-    const existingUser = await User.findOne({ email: userData.email });
-
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists with this email" });
-    }
-
-    await User.create(userData);
-    res.status(201).json({ message: "User added successfully" });
+    const newUser = new User(req.body);
+    const saved = await newUser.save();
+    res.status(201).json(saved);
   } catch (error) {
-    console.error("Error while adding user: ", error);
-    res.status(500).json({ message: "An error occurred while adding user" });
+    console.error("Add user error:", error);
+    res.status(500).json({ message: "Failed to add user" });
   }
 };
 
-// Delete a user
-const deleteUser = async (req, res) => {
+// 2. Get All Users
+export const getAllUsers = async (req, res) => {
   try {
-    const { id } = req.query;
-    const deletedUser = await User.deleteOne({ _id: id });
-
-    if (deletedUser.deletedCount === 0) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    res.status(200).json({ message: "User deleted successfully" });
+    const users = await User.find({});
+    res.status(200).json(users);
   } catch (error) {
-    console.error("Error while deleting user: ", error);
-    res.status(500).json({ message: "An error occurred while deleting user" });
+    res.status(500).json({ message: "Failed to fetch users" });
   }
 };
 
-// Show user details
-const detailUser = async (req, res) => {
+// 3. Get User by ID
+export const getUserById = async (req, res) => {
   try {
-    const { id } = req.query;
-    const user = await User.findOne({ _id: id }, { __v: 0 });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
     res.status(200).json(user);
   } catch (error) {
-    console.error("Error while fetching user details: ", error);
-    res.status(500).json({ message: "An error occurred while fetching user details" });
+    res.status(500).json({ message: "Failed to fetch user" });
   }
 };
 
-// Get all users with filter/sort/search
-const getUsers = async (req, res) => {
+// 4. Update User
+export const updateUser = async (req, res) => {
   try {
-    const { sort, filterType, filterValue, searchType, searchInput } = req.query;
-    let sortOrder = {};
-    let searchCriteria = {};
-
-    // Sort Logic
-    switch (sort) {
-      case "fullName":
-        sortOrder = { fullName: 1 };
-        break;
-      case "branch":
-        sortOrder = { branch: 1 };
-        break;
-      case "yearOfPassing":
-        sortOrder = { yearOfPassing: -1 };
-        break;
-      default:
-        sortOrder = { fullName: 1 };
-    }
-
-    // Filter Logic
-    if (filterType && filterValue) {
-      if (filterType === "branch") {
-        searchCriteria.branch = { $regex: new RegExp(filterValue, "i") };
-      } else if (filterType === "yearOfPassing") {
-        searchCriteria.yearOfPassing = filterValue;
-      }
-    }
-
-    // Search Logic
-    if (searchType && searchInput) {
-      const searchRegex = new RegExp(searchInput.trim(), "i");
-      if (searchType === "fullName") {
-        searchCriteria.fullName = searchRegex;
-      } else if (searchType === "email") {
-        searchCriteria.email = searchRegex;
-      } else if (searchType === "branch") {
-        searchCriteria.branch = searchRegex;
-      } else if (searchType === "yearOfPassing") {
-        searchCriteria.yearOfPassing = searchInput;
-      }
-    }
-
-    const users = await User.find(searchCriteria, { __v: 0 }).sort(sortOrder);
-
-    if (!users.length) {
-      return res.status(404).json({ message: "No users found matching criteria" });
-    }
-
-    res.status(200).json(users);
+    const updated = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    if (!updated) return res.status(404).json({ message: "User not found" });
+    res.status(200).json(updated);
   } catch (error) {
-    console.error("Error while fetching users: ", error);
-    res.status(500).json({ message: "An error occurred while fetching users" });
+    res.status(500).json({ message: "Failed to update user" });
   }
 };
 
-// Update a user
-const updateUser = async (req, res) => {
+// 5. Delete User
+export const deleteUser = async (req, res) => {
   try {
-    const userData = req.body;
-    const { _id } = userData;
-
-    const updatedUser = await User.findOneAndUpdate({ _id }, { $set: userData }, { new: true });
-
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    res.status(200).json({ message: "User updated successfully" });
+    const deleted = await User.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ message: "User not found" });
+    res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
-    console.error("Error while updating user: ", error);
-    res.status(500).json({ message: "An error occurred while updating user" });
+    res.status(500).json({ message: "Failed to delete user" });
   }
 };
 
-// Optional: Separate user search
-const searchUsers = async (req, res) => {
+// 6. Search Users
+export const searchUsers = async (req, res) => {
   try {
     const { searchType, searchInput } = req.query;
-    const filter = {};
-
-    if (searchType && searchInput) {
-      const regex = new RegExp(searchInput.trim(), "i");
-      filter[searchType] = regex;
+    if (!searchType || !searchInput) {
+      return res.status(400).json({ message: "Missing search parameters" });
     }
 
-    const users = await User.find(filter, { __v: 0 });
-    if (!users.length) {
-      return res.status(404).json({ message: "No users found" });
-    }
+    const query = {};
+    query[searchType] = { $regex: searchInput, $options: "i" };
 
+    const users = await User.find(query);
     res.status(200).json(users);
   } catch (error) {
-    console.error("Error while searching users: ", error);
-    res.status(500).json({ message: "An error occurred while searching users" });
+    res.status(500).json({ message: "Search failed" });
   }
 };
-
-export { addUser, deleteUser, detailUser, getUsers, updateUser, searchUsers };

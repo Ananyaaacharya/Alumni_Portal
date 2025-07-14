@@ -1,42 +1,29 @@
-//backend\models\admin.model.js
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const adminSchema = mongoose.Schema({
-  username : {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
+const adminSchema = new mongoose.Schema({
+  username: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  role: { type: String, enum: ["admin"], default: "admin" }
 });
 
-adminSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+adminSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
   this.password = await bcrypt.hash(this.password, 10);
-  next();
 });
 
-adminSchema.methods.isPasswordCorrect = async function (password) {
-  return await bcrypt.compare(password, this.password);
+adminSchema.methods.isPasswordCorrect = function (password) {
+  return bcrypt.compare(password, this.password);
 };
 
 adminSchema.methods.generateToken = function () {
   return jwt.sign(
-    {
-      _id: this._id,
-    },
-    process.env.TOKEN_SECRET
+    { id: this._id, username: this.username, role: this.role },
+    process.env.TOKEN_SECRET || "secret",
+    { expiresIn: "1h" }
   );
 };
 
-const Admin = mongoose.model("admin", adminSchema);
-
-export default Admin;
+export default mongoose.model("Admin", adminSchema);
