@@ -1,80 +1,44 @@
-//backend\controllers\adminAuth.controller.js
 import Admin from "../models/admin.model.js";
-import jwt from "jsonwebtoken";
+import Faculty from "../models/faculty.model.js";
+import Student from "../models/student.model.js";
 
-// Register admin
-const register = async (req, res) => {
+export const register = async (req, res) => {
   try {
-    let { username, email, password } = req.body;
+    const { username, email, password, role } = req.body;
 
-    if (!username || !email || !password) {
-      return res.status(400).json({ message: "Enter all credentials" });
+    if (!["admin", "faculty", "student"].includes(role)) {
+      return res.status(400).json({ message: "Invalid role" });
     }
 
-    email = email.toLowerCase();
+    const Model = role === "admin" ? Admin : role === "faculty" ? Faculty : Student;
+    const existing = await Model.findOne({ email });
+    if (existing) return res.status(400).json({ message: "Email already registered" });
 
-    const existingAdmin = await Admin.findOne({ email });
-    if (existingAdmin) {
-      return res.status(400).json({ message: "Admin already exists" });
-    }
+    const newUser = new Model({ username, email, password, role });
+    await newUser.save();
 
-    const user = await Admin.create({ username, email, password });
-    const token = await user.generateToken();
-    return res
-      .status(201)
-      .json({ message: "Admin created successfully", token });
-  } catch (error) {
-    console.error("Error during registration:", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    const token = newUser.generateToken();
+    res.status(201).json({ token, username, role });
+  } catch (err) {
+    res.status(500).json({ message: "Registration failed" });
   }
 };
 
-// Login admin
-const login = async (req, res) => {
+export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const clientToken = req.headers.authorization?.split(" ")[1];
+    const { email, password, role } = req.body;
+    if (!email || !password || !role) return res.status(400).json({ message: "Missing fields" });
 
-    if (clientToken) {
-      try {
-        const decoded = jwt.verify(clientToken, process.env.TOKEN_SECRET);
-        const admin = await Admin.findOne(
-          { _id: decoded._id },
-          { username: 1, _id: 0 }
-        );
+    const Model = role === "admin" ? Admin : role === "faculty" ? Faculty : Student;
+    const user = await Model.findOne({ email });
+    if (!user) return res.status(401).json({ message: "User not found" });
 
-        if (admin) {
-          return res
-            .status(200)
-            .json({ message: "Token is valid", username: admin.username });
-        } else {
-          return res.status(401).json({ message: "Invalid token" });
-        }
-      } catch (error) {
-        return res.status(401).json({ message: "Invalid token" });
-      }
-    }
+    const isMatch = await user.isPasswordCorrect(password);
+    if (!isMatch) return res.status(401).json({ message: "Incorrect password" });
 
-    if (!email || !password) {
-      return res.status(400).json({ message: "Enter all credentials" });
-    }
-
-    const admin = await Admin.findOne({ email: email.toLowerCase() });
-    if (!admin) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const isPasswordCorrect = await admin.isPasswordCorrect(password);
-    if (!isPasswordCorrect) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    const token = await admin.generateToken();
-    return res.status(200).json({ token, username: admin.username });
-  } catch (error) {
-    console.error("Error during login:", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    const token = user.generateToken();
+    res.status(200).json({ token, username: user.username, role });
+  } catch (err) {
+    res.status(500).json({ message: "Login failed" });
   }
 };
-
-export { login, register };

@@ -2,30 +2,36 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import eventRoutes from "./routes/eventRoutes.js";
-//import userRoutes from "./routes/userRoutes.js";
 import dotenv from "dotenv";
 
-dotenv.config(); 
+import userRouter from "./routes/user.router.js";
+import authRouter from "./routes/auth.router.js";
+import eventRoutes from "./routes/eventRoutes.js";
+
+dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
+// === Middlewares ===
 app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
-mongoose.connect("mongodb://localhost:27017/alumniPortal")
+// === Database Connection ===
+mongoose.connect("mongodb://127.0.0.1:27017/alumniPortal", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
 .then(() => console.log("✅ MongoDB Connected"))
-.catch((err) => console.log("❌ DB Error:", err));
+.catch((err) => console.error("❌ DB Connection Error:", err));
 
-import userRouter from "./routes/user.router.js";  // 👈 Replaces bookRouter
-app.use("/api/users", userRouter);                 // 👈 All user-related routes
+// === Routes ===
+app.use("/api/users", userRouter);   // ✅ User-related (add, fetch, search)
+app.use("/api/auth", authRouter);    // ✅ Auth-related (register, login)
+app.use("/events", eventRoutes);     // ✅ Events (if used in your app)
 
-import authRouter from "./routes/auth.router.js";  // 👈 Keep if admin auth/login is needed
-app.use("/api/auth", authRouter);                  // 👈 For login/register
-
-//app.use("/", userRoutes);
-app.use("/events", eventRoutes);
-
-const PORT = 5000;
-app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
+// === Server Start ===
+app.listen(PORT, () => {
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
+});

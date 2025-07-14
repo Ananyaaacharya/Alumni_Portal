@@ -3,15 +3,19 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
-  const baseUrl = process.env.REACT_APP_BASE_URL || "http://localhost:5000";
+  const baseUrl = "http://localhost:5000";
   const navigate = useNavigate();
 
-  const [admin, setAdmin] = useState({ email: "", password: "" });
+  const [admin, setAdmin] = useState({
+    email: "",
+    password: "",
+    role: "",
+  });
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already authenticated
     const token = localStorage.getItem("token");
     const username = localStorage.getItem("username");
     const role = localStorage.getItem("role");
@@ -19,7 +23,7 @@ function Login() {
     if (token && username && role) {
       navigate("/home");
     } else {
-      setLoading(false); // Show login form
+      setLoading(false);
     }
   }, [navigate]);
 
@@ -38,6 +42,7 @@ function Login() {
       localStorage.setItem("username", username);
       localStorage.setItem("role", role);
 
+      // ✅ Redirect to home page
       navigate("/home");
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Login failed.";
@@ -49,7 +54,7 @@ function Login() {
     navigate("/register");
   };
 
-  if (loading) return null; // Prevent flickering before auth check
+  if (loading) return null;
 
   return (
     <div className="container d-flex justify-content-center align-items-center vh-100">
@@ -58,7 +63,24 @@ function Login() {
           <div className="alert alert-danger text-center fw-semibold">{error}</div>
         )}
         <form onSubmit={handleSubmit}>
-          <h2 className="text-center text-primary mb-4">Admin Login</h2>
+          <h2 className="text-center text-primary mb-4">Login</h2>
+
+          <div className="form-group mb-3">
+            <label htmlFor="role" className="form-label fw-semibold">Login as</label>
+            <select
+              id="role"
+              name="role"
+              className="form-select"
+              value={admin.role}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Role</option>
+              <option value="admin">Admin</option>
+              <option value="faculty">Faculty</option>
+              <option value="student">Student</option>
+            </select>
+          </div>
 
           <div className="form-group mb-3">
             <label htmlFor="email1" className="form-label fw-semibold">Email address</label>

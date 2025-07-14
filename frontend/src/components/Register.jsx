@@ -1,16 +1,17 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 function Register() {
   const baseUrl = "http://localhost:5000/api/auth";
-
   const navigate = useNavigate();
 
   const [admin, setAdmin] = useState({
     username: "",
     email: "",
     password: "",
+    role: "",
   });
 
   const [error, setError] = useState("");
@@ -18,16 +19,24 @@ function Register() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      console.log("Registering with URL:", `${baseUrl}/register`);
       const res = await axios.post(`${baseUrl}/register`, admin);
-      const token = res.data.token;
-      if (token) {
-        localStorage.setItem("token", token);
-        localStorage.setItem("username", admin.username);
-        navigate("/home");
-      }
+
+      Swal.fire({
+        icon: "success",
+        title: "Registration Successful!",
+        text: "You can now login.",
+        confirmButtonText: "Go to Login",
+      }).then(() => {
+        navigate("/login");
+      });
+
+      setAdmin({
+        username: "",
+        email: "",
+        password: "",
+        role: "",
+      });
     } catch (error) {
-      console.error("Registration error:", error.response?.data || error.message);
       setError(error.response?.data?.message || "Registration failed.");
     }
   };
@@ -39,62 +48,82 @@ function Register() {
 
   return (
     <div className="container d-flex justify-content-center align-items-center vh-100">
-      <div className="col-4 m-5 border border-3 border-secondary rounded-5 shadow-lg p-5">
+      <div className="col-4 border border-3 border-secondary rounded-5 shadow-lg p-5">
         {error && (
-          <div className="alert alert-danger fw-semibold text-center">
-            {error}
-          </div>
+          <div className="alert alert-danger text-center fw-semibold">{error}</div>
         )}
         <form onSubmit={handleSubmit}>
-          <h2 className="text-center text-secondary">Register</h2>
-          <div className="form-group p-3">
-            <label htmlFor="username" className="mb-1 fw-semibold text-secondary">
-              Username
-            </label>
+          <h2 className="text-center text-secondary mb-3">Register</h2>
+
+          <div className="mb-3">
+            <label className="form-label fw-semibold">Role</label>
+            <select
+              name="role"
+              className="form-select"
+              value={admin.role}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Role</option>
+              <option value="admin">Admin</option>
+              <option value="faculty">Faculty</option>
+              <option value="student">Student</option>
+            </select>
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label fw-semibold">Username</label>
             <input
               type="text"
-              className="form-control"
-              id="username"
               name="username"
+              className="form-control"
               placeholder="Enter username"
               value={admin.username}
               onChange={handleChange}
               required
             />
           </div>
-          <div className="form-group p-3">
-            <label htmlFor="email" className="mb-1 fw-semibold text-secondary">
-              Email
-            </label>
+
+          <div className="mb-3">
+            <label className="form-label fw-semibold">Email</label>
             <input
               type="email"
-              className="form-control"
-              id="email"
               name="email"
+              className="form-control"
               placeholder="Enter email"
               value={admin.email}
               onChange={handleChange}
               required
             />
           </div>
-          <div className="form-group p-3">
-            <label htmlFor="password" className="mb-1 fw-semibold text-secondary">
-              Password
-            </label>
+
+          <div className="mb-4">
+            <label className="form-label fw-semibold">Password</label>
             <input
               type="password"
-              className="form-control"
-              id="password"
               name="password"
+              className="form-control"
               placeholder="Enter password"
               value={admin.password}
               onChange={handleChange}
               required
             />
           </div>
+
           <div className="d-flex justify-content-center">
-            <button type="submit" className="btn btn-outline-secondary fw-bold mt-3">
+            <button type="submit" className="btn btn-outline-secondary fw-bold">
               Register
+            </button>
+          </div>
+
+          <div className="text-center mt-3">
+            <span className="text-muted">Already have an account? </span>
+            <button
+              type="button"
+              className="btn btn-link p-0 fw-bold"
+              onClick={() => navigate("/login")}
+            >
+              Click here to login
             </button>
           </div>
         </form>
