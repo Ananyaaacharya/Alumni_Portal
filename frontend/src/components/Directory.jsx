@@ -5,7 +5,7 @@ import Navbar from "./Navbar";
 import UserList from "./UserList";
 import SearchUsers from "./SearchUsers";
 import FilterSortUsers from "./FilterSortUsers";
-import "../styles/Directory.css"; // make sure to create or use this CSS file
+import "../styles/Directory.css"; 
 
 function Directory() {
   const baseUrl = `${process.env.REACT_APP_BASE_URL || "http://localhost:5000"}/api/users`;
@@ -29,9 +29,16 @@ function Directory() {
     return user[filterType] === (filterType === "yearOfPassing" ? Number(filterValue) : filterValue);
   });
 
-  const sortedUsers = [...filteredUsers].sort((a, b) =>
-    (a?.[sort] || "").localeCompare(b?.[sort] || "")
-  );
+const sortedUsers = [...filteredUsers].sort((a, b) => {
+  const aVal = a?.[sort];
+  const bVal = b?.[sort];
+
+  if (typeof aVal === "string" && typeof bVal === "string") {
+    return aVal.localeCompare(bVal);
+  } else {
+    return (aVal ?? 0) - (bVal ?? 0); // handles numbers and fallback for undefined
+  }
+});
 
   const currentUsers = sortedUsers.slice(indexOfFirstUser, indexOfLastUser);
   const totalPages = Math.ceil(sortedUsers.length / itemsPerPage);
@@ -56,17 +63,22 @@ function Directory() {
     fetchUsers();
   }, [baseUrl]); 
 
-  const handleSearch = async (data) => {
-    try {
-      const response = await axios.get(`${baseUrl}/search`, { params: data });
-      setUsers(response.data);
-      setError(response.data.length ? "" : "No users found.");
-      setSearchData(data);
-    } catch (err) {
-      console.error("Error searching users:", err);
-      setError("Search failed.");
-    }
+const handleSearch = async (data) => {
+  const adjustedData = {
+    ...data,
+    searchInput: data.searchType === "yearOfPassing" ? Number(data.searchInput) : data.searchInput
   };
+
+  try {
+    const response = await axios.get(`${baseUrl}/search`, { params: adjustedData });
+    setUsers(response.data);
+    setError(response.data.length ? "" : "No users found.");
+    setSearchData(data);
+  } catch (err) {
+    console.error("Error searching users:", err);
+    setError("Search failed.");
+  }
+};
 
   return (
     <>

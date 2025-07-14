@@ -31,7 +31,7 @@ function Home() {
           <button onClick={() => navigate("/events")}>Events</button>
           <button onClick={() => navigate("/Jobs ")}>Jobs/Internships</button>
           <button onClick={() => alert("Posts Page")}>Posts</button>
-          <button onClick={() => navigate("/directory")}>Find</button><button onClick={() => navigate("/directory")}>Find</button>
+          <button onClick={() => navigate("/directory")}>Find</button>
           <button
             className="logout-btn"
             onClick={() => {

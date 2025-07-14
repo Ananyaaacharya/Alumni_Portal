@@ -28,7 +28,6 @@ const UserList = ({ currentUsers }) => {
           <h5 className="col-2">Branch</h5>
           <h5 className="col-2">Passing</h5>
           <h5 className="col-2">Company</h5>
-          <h5 className="col-2">Role</h5>
         </div>
         <div className="col-4 d-flex justify-content-around mt-2">
           <h5 className="text-primary">Actions</h5>
@@ -47,7 +46,6 @@ const UserList = ({ currentUsers }) => {
             <h6 className="col-2">{user.branch}</h6>
             <h6 className="col-2">{user.yearOfPassing}</h6>
             <h6 className="col-2">{user.currentCompany}</h6>
-            <h6 className="col-2">{user.role}</h6>
           </div>
           <div className="col-4 d-flex justify-content-around">
             <Link to={`/user-detail/${user._id}`} className="btn btn-success">
