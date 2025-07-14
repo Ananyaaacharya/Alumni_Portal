@@ -8,7 +8,7 @@ import Events from './components/Events';
 import UserDetail from "./components/UserDetail";
 import UpdateUser from "./components/UpdateUser";
 import DeleteUser from "./components/DeleteUser";
-import Directory from './components/Directory';
+import Directory from "./components/Directory";
 import NewUser from './components/NewUser';
 import JobPost from './components/JobPost';
 import 'bootstrap/dist/css/bootstrap.min.css';

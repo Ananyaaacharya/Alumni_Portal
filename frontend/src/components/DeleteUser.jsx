@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 
 function DeleteUser() {
-  const baseUrl = `${import.meta.env.VITE_BASE_URL}/api/users`;
+  const baseUrl = `${process.env.REACT_APP_BASE_URL || "http://localhost:5000"}/api/users`;
 
   const { id } = useParams(); // `id` should be the user's MongoDB `_id`
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ function DeleteUser() {
 
       if (confirmDelete.isConfirmed) {
         try {
-          await axios.delete(`${baseUrl}/delete-user?id=${id}`);
+          await axios.delete(`${baseUrl}/delete-user/${id}`);
           Swal.fire({
             title: "Deleted!",
             text: "User has been deleted.",

@@ -63,16 +63,23 @@ export const deleteUser = async (req, res) => {
 export const searchUsers = async (req, res) => {
   try {
     const { searchType, searchInput } = req.query;
-    if (!searchType || !searchInput) {
+
+    if (!searchType || searchInput === undefined) {
       return res.status(400).json({ message: "Missing search parameters" });
     }
 
     const query = {};
-    query[searchType] = { $regex: searchInput, $options: "i" };
+
+    if (searchType === "yearOfPassing") {
+      query[searchType] = Number(searchInput);
+    } else {
+      query[searchType] = { $regex: searchInput, $options: "i" };
+    }
 
     const users = await User.find(query);
     res.status(200).json(users);
   } catch (error) {
+    console.error("Search user error:", error);
     res.status(500).json({ message: "Search failed" });
   }
 };

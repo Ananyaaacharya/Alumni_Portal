@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function UserDetail() {
-  const baseUrl = `${import.meta.env.VITE_BASE_URL}/api/users`;
+  const baseUrl = `${process.env.REACT_APP_BASE_URL || "http://localhost:5000"}/api/users`;
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -20,7 +20,7 @@ function UserDetail() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`${baseUrl}/user-detail?id=${id}`);
+       const res = await axios.get(`${baseUrl}/${id}`);
         setUser(res.data);
       } catch (err) {
         setError("Failed to load user data.");
@@ -29,7 +29,7 @@ function UserDetail() {
     };
 
     fetchUser();
-  }, [id]);
+  }, [id, baseUrl]); // ✅ includes baseUrl);
 
   if (error)
     return <p className="text-center text-danger mt-5 fw-bold">{error}</p>;

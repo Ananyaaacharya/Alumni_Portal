@@ -4,7 +4,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 function UpdateUser() {
-  const baseUrl = `${import.meta.env.VITE_BASE_URL}/${import.meta.env.VITE_USER_ROUTE}`;
+  const baseUrl = `${process.env.REACT_APP_BASE_URL || "http://localhost:5000"}/api/users`;
   const { id } = useParams(); // Assuming your user id is passed in the URL
   const navigate = useNavigate();
 
