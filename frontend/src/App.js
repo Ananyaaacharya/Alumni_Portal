@@ -11,13 +11,8 @@ import JobPost from './components/JobPost';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-import NewUser from "./components/NewUser"; 
-
 import Jobs from "./components/Jobs";
 import JobDetails from "./components/JobDetails";
-
-import Directory from './components/Directory';
-import NewUser from './components/NewUser';
 
 function App() {
   useEffect(() => {
